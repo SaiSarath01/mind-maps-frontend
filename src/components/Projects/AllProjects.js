@@ -76,8 +76,8 @@ const ProjectCard = ({ project }) => {
     history.push(`/project/${project._id}`)
   }
   return (
-    <Grid container style={cardStyle}>
-      <Grid container alignItems="center" spacing={3}>
+    <Grid container style={cardStyle} direction="column" spacing={3}>
+      <Grid container alignItems="center" spacing={2}>
       <Grid item xs={3}>
        <Typography variant="h5">
          {project.title}
@@ -86,13 +86,12 @@ const ProjectCard = ({ project }) => {
        <Grid item xs={3}>
           Total Nodes
        </Grid>
-       <Grid item xs={2}>
+       <Grid item xs={3}>
           Total Relations
        </Grid>
       </Grid>
-      <Grid container justifyContent="flex-end" alignItems="center" spacing={2}>
+      <Grid container style={{marginTop:"3vh"}} justifyContent="flex-end" alignItems="center" spacing={2}>
         <Grid item>
-        
           <Button style={{backgroundColor:"#78909c",color:"#ffffff"}} onClick={edit}>Edit</Button>
         </Grid>
         <Grid item>

@@ -1,0 +1,24 @@
+
+.home .title {
+  min-height: 100vh;
+  border: 1px solid #ccc;
+  background-color: #11717d;
+}
+
+.diagram-component {
+  min-width: 100%;
+  height: 92vh;
+  border: solid 1px black;
+}
+
+.home .title h2 {
+  color: #fffff7;
+  font-size: 32px;
+  text-align: center;
+  margin-top: calc(100% - 75%);
+}
+
+.home .login-grid {
+  margin-left: 4vh;
+  margin-top: 16vh;
+}

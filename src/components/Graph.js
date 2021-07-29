@@ -29,12 +29,7 @@ const Graph = (props) => {
           stroke: null,
           portId: "",
           cursor: "pointer",
-          fromLinkable: true,
-          fromLinkableSelfNode: true,
-          fromLinkableDuplicates: true,
-          toLinkable: true,
-          toLinkableSelfNode: false,
-          toLinkableDuplicates: false,
+          fromLinkable: true, toLinkable: true,
         },
         // the Shape.fill comes from the Node.data.color property
         new go.Binding("fill", "color")
@@ -51,9 +46,6 @@ const Graph = (props) => {
       go.Link,
       {
         toShortLength: 2,
-        selectable: true,
-        relinkableFrom: true,
-        relinkableTo: true,
       },
       $(go.Shape, { strokeWidth: 2 }),
       $(go.Shape, { toArrow: "Standard", stroke: "black" })

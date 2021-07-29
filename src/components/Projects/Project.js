@@ -29,11 +29,10 @@ const Project = (props) => {
     //
     if (!loading) {
       if (!!project.data) {
-        if (
-          project.data.nodeDataArray.length > 0 ||
-          project.data.linkDataArray.length > 0
-        ) {
+        if (!!project.data.nodeDataArray && project.data.nodeDataArray.length > 0) {
           setNodeDataArray([...project.data.nodeDataArray]);
+        }
+        if (!!project.data.linkDataArray && project.data.linkDataArray.length > 0) {
           setLinkDataArray([...project.data.linkDataArray]);
         }
       }
@@ -54,11 +53,10 @@ const Project = (props) => {
   const saveGraph = () => {
     saveProjectDetail(project._id, nodeDataArray, linkDataArray);
   };
-  const handleModelChange = (changes) => {
+  const handleModelChange = async (changes) => {
     if (!graphData) {
       setGraphData(changes);
     }
-    console.log(graphData, changes);
     // node modification
     if (changes.modifiedNodeData) {
       let changedNode = nodeDataArray.filter(
@@ -68,16 +66,27 @@ const Project = (props) => {
       changedNode[0].text = changes.modifiedNodeData[0].text;
       setNodeDataArray([...nodeDataArray]);
     }
+    if (changes.insertedLinkKeys) {
+      const isLinkAdded = (linkDataArray.filter((link) => link.key === changes.modifiedLinkData[0].key))[0]
+      if(!isLinkAdded) {
+        setLinkDataArray([...linkDataArray, changes.modifiedLinkData[0]]);
+      }
+    }
     // link modification
-    if(changes.removedLinkKeys){
-      const getOtherLinks = linkDataArray.filter((link) => link.key !== changes.removedLinkKeys[0]);
-      setLinkDataArray([...getOtherLinks])
+    if (changes.removedLinkKeys) {
+      const getOtherLinks = linkDataArray.filter(
+        (link) => link.key !== changes.removedLinkKeys[0]
+      );
+      setLinkDataArray([...getOtherLinks]);
     }
     // removing node
-    if(changes.removedNodeKeys){
-      const getOtherNodes = nodeDataArray.filter((node) => node.key !== changes.removedNodeKeys[0]);
+    if (changes.removedNodeKeys) {
+      const getOtherNodes = nodeDataArray.filter(
+        (node) => node.key !== changes.removedNodeKeys[0]
+      );
       setNodeDataArray([...getOtherNodes]);
     }
+    saveGraph()
   };
   return (
     <Grid container>

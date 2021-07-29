@@ -1,12 +1,19 @@
-import { Grid, Typography, Link, Button,Dialog, DialogContent } from "@material-ui/core";
-import React, { useEffect,useState } from "react";
+import {
+  Grid,
+  Typography,
+  Link,
+  Button,
+  Dialog,
+  DialogContent,
+} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 import { connect, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { allProjects } from "../../redux/projects/reducer";
-import NewProject from './NewProject'
+import NewProject from "./NewProject";
 const cardStyle = {
   padding: "2vh",
-  background: "#e5e5e5",
+  background: "#E4F9E5",
   border: "1px solid #f4f4f4",
   margin: "2vh",
   marginLeft: "auto",
@@ -16,7 +23,7 @@ const cardStyle = {
 
 const AllProjects = (props) => {
   const { getAllProjects } = props;
-  const [open,setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const { allProjects } = useSelector((state) => state.projectStore);
   useEffect(() => {
     getAllProjects();
@@ -45,8 +52,8 @@ const AllProjects = (props) => {
           </Button>
         </Grid>
       </Grid>
-      <Grid container>
-        <Grid item xs={6} style={{ margin: "auto" }}>
+      <Grid container justifyContent="center">
+        <Grid item xs={4}>
           {allProjects.length >= 1 ? (
             <Grid>
               {allProjects.map((project) => (
@@ -54,16 +61,31 @@ const AllProjects = (props) => {
               ))}
             </Grid>
           ) : (
-            <Grid>
-              No Projects Found!
-              <Link href="/new-project">New Project</Link>
+            <Grid
+              container
+              direction="column"
+              justifyContent="center"
+              alignContent="center"
+              spacing={2}
+            >
+              <Grid item>
+                <Typography variant="h5">No Projects Found!</Typography>
+              </Grid>
+              <Grid item>
+                <Link href="/new-project">New Project</Link>
+              </Grid>
             </Grid>
           )}
         </Grid>
       </Grid>
-      <Dialog open={open} maxWidth='md' fullWidth  onClose={() => setOpen(false)}>
+      <Dialog
+        open={open}
+        maxWidth="md"
+        fullWidth
+        onClose={() => setOpen(false)}
+      >
         <DialogContent>
-            <NewProject callback={true} onClose={() => setOpen(false)} />
+          <NewProject callback={true} onClose={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
     </Grid>
@@ -73,32 +95,71 @@ const AllProjects = (props) => {
 const ProjectCard = ({ project }) => {
   const history = useHistory();
   const edit = () => {
-    history.push(`/project/${project._id}`)
-  }
+    history.push(`/project/${project._id}`);
+  };
   return (
     <Grid container style={cardStyle} direction="column" spacing={3}>
-      <Grid container alignItems="center" spacing={2}>
-      <Grid item xs={3}>
-       <Typography variant="h5">
-         {project.title}
-       </Typography>
-       </Grid>
-       <Grid item xs={3}>
-          Total Nodes
-       </Grid>
-       <Grid item xs={3}>
-          Total Relations
-       </Grid>
+      <Grid container direction="column" spacing={2}>
+        <Grid item xs={6}>
+          <Typography variant="h5">{project.title}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Grid container spacing={2}>
+            <Grid item>
+              <Typography variant="h6">Total Nodes</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6">
+               {
+                 !project.data ? 0 : <>
+                 {project.data.nodeDataArray ? project.data.nodeDataArray.length : null}
+                 </>
+               }
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={6}>
+          <Grid container spacing={2}>
+            <Grid item>
+              <Typography variant="h6">Total Relations</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6">
+              {
+                 !project.data ? 0 : <>
+                 {project.data.linkDataArray ? project.data.linkDataArray.length : null}
+                 </>
+               }
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid container style={{marginTop:"3vh"}} justifyContent="flex-end" alignItems="center" spacing={2}>
+      <Grid
+        container
+        style={{ marginTop: "3vh" }}
+        justifyContent="flex-start"
+        alignItems="center"
+        spacing={2}
+      >
         <Grid item>
-          <Button style={{backgroundColor:"#78909c",color:"#ffffff"}} onClick={edit}>Edit</Button>
+          <Button
+            style={{ backgroundColor: "#78909c", color: "#ffffff" }}
+            onClick={edit}
+          >
+            Edit
+          </Button>
         </Grid>
         <Grid item>
-          <Button style={{backgroundColor:"#d32f2f",color:"#ffffff"}}>Delete</Button>
+          <Button style={{ backgroundColor: "#d32f2f", color: "#ffffff" }}>
+            Delete
+          </Button>
         </Grid>
         <Grid item>
-          <Button style={{backgroundColor:"#1976d2",color:"#ffffff"}}>Share</Button>
+          <Button style={{ backgroundColor: "#1976d2", color: "#ffffff" }}>
+            Share
+          </Button>
         </Grid>
       </Grid>
     </Grid>

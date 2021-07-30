@@ -13,39 +13,53 @@ const Graph = (props) => {
         linkKeyProperty: "key",
       }),
     });
-
+    // context menu -settings
+    function openSettings(e, obj) {
+      const node = obj.part.data;
+      props.openSlider(node);
+    }
     diagram.nodeTemplate = $(
       go.Node,
       "Auto",
-      { selectionObjectName: "TEXT" },
+      { selectionObjectName: "text" },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(
         go.Point.stringify
       ),
+      {
+        contextMenu: $(
+          "ContextMenu",
+          $(
+            "ContextMenuButton",
+            $(go.TextBlock, { font: "16px" }, "Settings"),
+            { click: openSettings }
+          )
+        ),
+      },
       $(
         go.Shape,
-        "Circle",
-        // don't draw any outline
+        new go.Binding("figure", "shape"),
         {
           stroke: null,
           portId: "",
           cursor: "pointer",
-          fromLinkable: true, toLinkable: true,
+          fromLinkable: true,
+          toLinkable: true,
         },
-        // the Shape.fill comes from the Node.data.color property
         new go.Binding("fill", "color")
       ),
       $(
         go.TextBlock,
-        // leave some space around larger-than-normal text
-        { margin: 6, font: "18px sans-serif", editable: true, },
-        // the TextBlock.text comes from the Node.data.key property
-        new go.Binding("text")
+        { margin: 6, font: "18px sans-serif", editable: true },
+        new go.Binding("text", "text").makeTwoWay()
       )
     );
+
     diagram.linkTemplate = $(
       go.Link,
       {
-        toShortLength: 2,
+        curve: go.Link.Bezier,
+        fromShortLength: -2,
+        toShortLength: -2,
       },
       $(go.Shape, { strokeWidth: 2 }),
       $(go.Shape, { toArrow: "Standard", stroke: "black" })

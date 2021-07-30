@@ -1,4 +1,13 @@
-import { Button, Grid, Typography } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  Typography,
+  Drawer as Slider,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { connect, useSelector } from "react-redux";
 import {
@@ -13,8 +22,10 @@ const Project = (props) => {
   const [linkDataArray, setLinkDataArray] = useState([]);
   const [loading, setLoading] = useState(true);
   const [graphData, setGraphData] = useState(null);
-  // const { project } = useSelector((state) => state.projectStore);
-
+  const [sliderOpen, setSliderOpen] = useState(false);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedNodeColor, setSelectedNodeColor] = useState("");
+  const [nodeShape, setNodeShape] = useState("");
   useEffect(() => {
     const getProject = async (projectId) => {
       const response = await getProjectDetail(projectId);
@@ -26,24 +37,36 @@ const Project = (props) => {
   }, [props.match.params.projectId, getProjectDetail]);
   const { project } = useSelector((state) => state.projectStore);
   useEffect(() => {
-    //
     if (!loading) {
       if (!!project.data) {
-        if (!!project.data.nodeDataArray && project.data.nodeDataArray.length > 0) {
+        if (
+          !!project.data.nodeDataArray &&
+          project.data.nodeDataArray.length > 0
+        ) {
           setNodeDataArray([...project.data.nodeDataArray]);
         }
-        if (!!project.data.linkDataArray && project.data.linkDataArray.length > 0) {
+        if (
+          !!project.data.linkDataArray &&
+          project.data.linkDataArray.length > 0
+        ) {
           setLinkDataArray([...project.data.linkDataArray]);
         }
       }
     }
   }, [project, loading]);
+  const openSlider = (node) => {
+    setSelectedNode(node);
+    setSelectedNodeColor(node.color);
+    setNodeShape(node.shape);
+    setSliderOpen(true);
+  };
   const addNewNode = () => {
     const x = Math.floor(Math.random() * 500);
     const y = Math.floor(Math.random() * 100);
     const newNode = {
       key: nodeDataArray.length + 1,
       text: `N-${nodeDataArray.length + 1}`,
+      shape: "Circle",
       color: "#f4f4f4",
       loc: `${x} ${y}`,
     };
@@ -67,8 +90,10 @@ const Project = (props) => {
       setNodeDataArray([...nodeDataArray]);
     }
     if (changes.insertedLinkKeys) {
-      const isLinkAdded = (linkDataArray.filter((link) => link.key === changes.modifiedLinkData[0].key))[0]
-      if(!isLinkAdded) {
+      const isLinkAdded = linkDataArray.filter(
+        (link) => link.key === changes.modifiedLinkData[0].key
+      )[0];
+      if (!isLinkAdded) {
         setLinkDataArray([...linkDataArray, changes.modifiedLinkData[0]]);
       }
     }
@@ -86,7 +111,14 @@ const Project = (props) => {
       );
       setNodeDataArray([...getOtherNodes]);
     }
-    saveGraph()
+    saveGraph();
+  };
+  const updateNodeProperties = () => {
+    const node = nodeDataArray.filter((node) => node.key === selectedNode.key);
+    node[0].color = selectedNodeColor;
+    node[0].shape = nodeShape;
+    setSliderOpen(false);
+    setNodeDataArray([...nodeDataArray]);
   };
   return (
     <Grid container>
@@ -110,11 +142,6 @@ const Project = (props) => {
                 Add Node
               </Button>
             </Grid>
-            <Grid item>
-              <Button variant="contained" color="primary" onClick={saveGraph}>
-                Save Graph
-              </Button>
-            </Grid>
           </Grid>
         </Grid>
         <Grid item xs={11} style={{ marginTop: "2vh" }}>
@@ -122,9 +149,55 @@ const Project = (props) => {
             nodeDataArray={nodeDataArray}
             linkDataArray={linkDataArray}
             handleModelChange={handleModelChange}
+            openSlider={openSlider}
           />
         </Grid>
       </Grid>
+      <Slider anchor="right" open={sliderOpen} style={{ width: "550px" }}>
+        {selectedNode ? (
+          <Grid
+            container
+            direction="column"
+            style={{ minWidth: "350px" }}
+            spacing={3}
+          >
+            <Grid item>
+              <Typography variant="h5">{selectedNode.text}</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6">Color:</Typography>
+              <TextField
+                variant="outlined"
+                onChange={(e) => setSelectedNodeColor(e.target.value)}
+              ></TextField>
+            </Grid>
+            <Grid item>
+              <InputLabel id="demo-simple-select-outlined-label">
+                Shape
+              </InputLabel>
+              <Select
+                style={{ minWidth: "230px" }}
+                variant="outlined"
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
+                label="Age"
+                onChange={(e) => setNodeShape(e.target.value)}
+              >
+                <MenuItem value="Circle">Circle</MenuItem>
+                <MenuItem value="Rectangle">Rectangle</MenuItem>
+                <MenuItem value="RoundedRectangle">RoundedRectangle</MenuItem>
+                <MenuItem value="Ellipse">Ellipse</MenuItem>
+                <MenuItem value="Diamond">Diamond</MenuItem>
+              </Select>
+            </Grid>
+            <Grid item>
+              <Button variant="contained" onClick={updateNodeProperties}>
+                Update Node
+              </Button>
+            </Grid>
+          </Grid>
+        ) : null}
+      </Slider>
     </Grid>
   );
 };

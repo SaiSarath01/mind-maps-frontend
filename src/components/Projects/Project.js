@@ -25,6 +25,8 @@ const Project = (props) => {
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedNodeColor, setSelectedNodeColor] = useState("");
   const [nodeShape, setNodeShape] = useState("");
+  const [nodeFont, setNodeFont] = useState("");
+  const { project } = useSelector((state) => state.projectStore);
   useEffect(() => {
     const getProject = async (projectId) => {
       const response = await getProjectDetail(projectId);
@@ -34,7 +36,6 @@ const Project = (props) => {
     };
     getProject(props.match.params.projectId);
   }, [props.match.params.projectId, getProjectDetail]);
-  const { project } = useSelector((state) => state.projectStore);
   useEffect(() => {
     if (!loading) {
       if (!!project.data) {
@@ -57,6 +58,7 @@ const Project = (props) => {
     setSelectedNode(node);
     setSelectedNodeColor(node.color);
     setNodeShape(node.shape);
+    setNodeFont(node.font);
     setSliderOpen(true);
   };
   const addNewNode = () => {
@@ -68,23 +70,28 @@ const Project = (props) => {
       shape: "Circle",
       color: "#f4f4f4",
       loc: `${x} ${y}`,
+      font: "16px sans-serif",
+      movable: true,
       items: [],
     };
 
     setNodeDataArray([...nodeDataArray, newNode]);
   };
-  const saveGraph = (nodeDataArray, linkDataArray) => {
-    saveProjectDetail(
-      props.match.params.projectId,
-      nodeDataArray,
-      linkDataArray
-    );
+  const saveGraph = (graphNodeData, graphLinkData) => {
+    if (graphNodeData.length > 0) {
+      saveProjectDetail(
+        props.match.params.projectId,
+        graphNodeData,
+        graphLinkData
+      );
+    }
   };
 
   const updateNodeProperties = () => {
     const node = nodeDataArray.filter((node) => node.key === selectedNode.key);
     node[0].color = selectedNodeColor;
     node[0].shape = nodeShape;
+    node[0].font = nodeFont + "px sans-serif";
     setSliderOpen(false);
     setNodeDataArray([...nodeDataArray]);
   };
@@ -113,12 +120,16 @@ const Project = (props) => {
           </Grid>
         </Grid>
         <Grid item xs={11} style={{ marginTop: "2vh" }}>
-          <Graph
-            nodeDataArray={nodeDataArray}
-            linkDataArray={linkDataArray}
-            openSlider={openSlider}
-            saveGraph={saveGraph}
-          />
+          {loading ? (
+            <h2>Loading...</h2>
+          ) : (
+            <Graph
+              nodeDataArray={nodeDataArray}
+              linkDataArray={linkDataArray}
+              openSlider={openSlider}
+              saveGraph={saveGraph}
+            />
+          )}
         </Grid>
       </Grid>
       <Slider anchor="right" open={sliderOpen} style={{ width: "550px" }}>
@@ -136,12 +147,13 @@ const Project = (props) => {
               <Typography variant="h6">Color:</Typography>
               <TextField
                 variant="outlined"
+                placeholder="eg:blue/#e5e5e5"
                 onChange={(e) => setSelectedNodeColor(e.target.value)}
               ></TextField>
             </Grid>
             <Grid item>
               <InputLabel id="demo-simple-select-outlined-label">
-                Shape
+                <Typography variant="h6">Shape</Typography>
               </InputLabel>
               <Select
                 style={{ minWidth: "230px" }}
@@ -157,6 +169,14 @@ const Project = (props) => {
                 <MenuItem value="Ellipse">Ellipse</MenuItem>
                 <MenuItem value="Diamond">Diamond</MenuItem>
               </Select>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6">Font Size:</Typography>
+              <TextField
+                variant="outlined"
+                placeholder="Enter Font Size in number"
+                onChange={(e) => setNodeFont(e.target.value)}
+              ></TextField>
             </Grid>
             <Grid item>
               <Button variant="contained" onClick={updateNodeProperties}>

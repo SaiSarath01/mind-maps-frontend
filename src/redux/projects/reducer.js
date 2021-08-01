@@ -39,11 +39,23 @@ const setProjectDetail = (project) => {
   };
 };
 
+const setNodeAndLink = (nodeDataArray, linkDataArray) => {
+  return {
+    type: "DATA",
+    nodeDataArray,
+    linkDataArray,
+  };
+};
+
 export const getProjectDetail = (projectId) => async (dispatch) => {
   try {
     const url = `/project/${projectId}`;
     const response = await axios.get(url);
     dispatch(setProjectDetail(response.data.body.project));
+    if (response.data.body.project.data) {
+      const { nodeDataArray, linkDataArray } = response.data.body.project.data;
+      dispatch(setNodeAndLink(nodeDataArray, linkDataArray));
+    }
     return response.status;
   } catch (error) {
     console.log(error);
@@ -59,6 +71,7 @@ export const saveProjectDetail =
         linkDataArray,
       };
       await axios.put(url, data);
+      // dispatch(setNodeAndLink(nodeDataArray,linkDataArray))
     } catch (error) {
       console.log(error);
     }

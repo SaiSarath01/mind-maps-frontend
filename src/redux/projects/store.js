@@ -1,6 +1,8 @@
 const initialState = {
    allProjects: [],
    project: {},
+   nodeDataArray: [],
+   linkDataArray: [],
 }
 
 const projectStore = (state=initialState,action) => {
@@ -15,6 +17,12 @@ const projectStore = (state=initialState,action) => {
             ...state,
             project: action.project
          }
+      case "DATA":
+         return {
+            ...state,
+            nodeDataArray: [...action.nodeDataArray],
+            linkDataArray: [...action.linkDataArray]
+         }  
         default: return {...state};   
    }
 }

@@ -71,60 +71,49 @@ const Graph = (props) => {
     function hideAndShowParents(e, obj) {
       console.log(obj.part.data);
     }
-    diagram.nodeTemplate =
-    $(go.Node, "Auto",
-    { selectionObjectName: "text" },  // this event handler is defined below
-      {
-        contextMenu: $(
-          "ContextMenu",
-          $(
-            "ContextMenuButton",
-            $(go.TextBlock, { font: "16px" }, "Settings"),
-            { click: openNodeSettings }
-          ),
-          $(
-            "ContextMenuButton",
-            $(go.TextBlock, { font: "16px" }, "Show/Hide Parents"),
-            { click: hideAndShowParents }
-          )
-        ),
-      },
+    diagram.nodeTemplate = $(
+      go.Node,
+      "Vertical",
       $(
-        go.Shape,
-        new go.Binding("figure", "shape"),
+        go.Panel,"Auto",
         {
-          stroke: null,
-          portId: "",
-          cursor: "pointer",
-          fromLinkable: true,
-          toLinkable: true,
+          contextMenu: $(
+            "ContextMenu",
+            $(
+              "ContextMenuButton",
+              $(go.TextBlock, { font: "12px" }, "Settings"),
+              { click: openNodeSettings }
+            ),
+            $(
+              "ContextMenuButton",
+              $(go.TextBlock, { font: "12px" }, "Show/Hide Parents"),
+              { click: hideAndShowParents }
+            )
+          ),
         },
-        new go.Binding("fill", "color")
+        $(
+          go.Shape,
+          new go.Binding("figure", "shape"),
+          {
+            stroke: null,
+            portId: "",
+            cursor: "pointer",
+            fromLinkable: true,
+            toLinkable: true,
+          },
+          new go.Binding("fill", "color")
+        ),
+        $(
+          go.TextBlock,
+          { editable: true },
+          new go.Binding("text", "text").makeTwoWay(),
+          new go.Binding("font", "font")
+        ),
+  
       ),
-      $(
-        go.TextBlock,
-        { font: "18px sans-serif", editable: true },
-        new go.Binding("text", "text").makeTwoWay()
-      ),
-      $(go.Panel,"Auto",  
-      { margin: 8 }, 
+      
       $("TreeExpanderButton")
-    )
     );
-    // diagram.nodeTemplate = $(
-    //   go.Node,
-    //   "Auto",
-    //   { selectionObjectName: "text" },
-    //   new go.Binding("location", "loc", go.Point.parse).makeTwoWay(
-    //     go.Point.stringify
-    //   ),
-
-    //   $(
-    //     go.Panel, 
-    //     { height: 17 },
-    //     $("TreeExpanderButton")
-    //   )
-    // );
     diagram.linkTemplate = $(
       go.Link,
       {

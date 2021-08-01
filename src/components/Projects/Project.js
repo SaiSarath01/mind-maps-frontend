@@ -21,7 +21,6 @@ const Project = (props) => {
   const [nodeDataArray, setNodeDataArray] = useState([]);
   const [linkDataArray, setLinkDataArray] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [graphData, setGraphData] = useState(null);
   const [sliderOpen, setSliderOpen] = useState(false);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedNodeColor, setSelectedNodeColor] = useState("");
@@ -69,50 +68,19 @@ const Project = (props) => {
       shape: "Circle",
       color: "#f4f4f4",
       loc: `${x} ${y}`,
+      items: [],
     };
 
     setNodeDataArray([...nodeDataArray, newNode]);
   };
-  const saveGraph = () => {
-    saveProjectDetail(project._id, nodeDataArray, linkDataArray);
+  const saveGraph = (nodeDataArray, linkDataArray) => {
+    saveProjectDetail(
+      props.match.params.projectId,
+      nodeDataArray,
+      linkDataArray
+    );
   };
-  const handleModelChange = async (changes) => {
-    if (!graphData) {
-      setGraphData(changes);
-    }
-    // node modification
-    if (changes.modifiedNodeData) {
-      let changedNode = nodeDataArray.filter(
-        (node) => node.key === changes.modifiedNodeData[0].key
-      );
-      changedNode[0].loc = changes.modifiedNodeData[0].loc;
-      changedNode[0].text = changes.modifiedNodeData[0].text;
-      setNodeDataArray([...nodeDataArray]);
-    }
-    if (changes.insertedLinkKeys) {
-      const isLinkAdded = linkDataArray.filter(
-        (link) => link.key === changes.modifiedLinkData[0].key
-      )[0];
-      if (!isLinkAdded) {
-        setLinkDataArray([...linkDataArray, changes.modifiedLinkData[0]]);
-      }
-    }
-    // link modification
-    if (changes.removedLinkKeys) {
-      const getOtherLinks = linkDataArray.filter(
-        (link) => link.key !== changes.removedLinkKeys[0]
-      );
-      setLinkDataArray([...getOtherLinks]);
-    }
-    // removing node
-    if (changes.removedNodeKeys) {
-      const getOtherNodes = nodeDataArray.filter(
-        (node) => node.key !== changes.removedNodeKeys[0]
-      );
-      setNodeDataArray([...getOtherNodes]);
-    }
-    saveGraph();
-  };
+
   const updateNodeProperties = () => {
     const node = nodeDataArray.filter((node) => node.key === selectedNode.key);
     node[0].color = selectedNodeColor;
@@ -148,8 +116,8 @@ const Project = (props) => {
           <Graph
             nodeDataArray={nodeDataArray}
             linkDataArray={linkDataArray}
-            handleModelChange={handleModelChange}
             openSlider={openSlider}
+            saveGraph={saveGraph}
           />
         </Grid>
       </Grid>
